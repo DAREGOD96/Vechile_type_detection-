@@ -1,4 +1,4 @@
-from src.VechileTypeDetection.logger import logging
+from src.VehicleTypeDetection.logger import logging
 import sys
 
 
