@@ -1,1 +1,4 @@
-key: value #for not getting any error
+input_shape: [240, 240,3]
+num_classes: 4  
+kernel_size: 3
+learning_rate: 0.001 

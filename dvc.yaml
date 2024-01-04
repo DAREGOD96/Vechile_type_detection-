@@ -7,3 +7,16 @@ stages:
       - config/config.yaml
     outs:
       - artifacts/data_ingestion
+      
+  prepare_base_model:
+    cmd: python src/VehicleTypeDetection/pipeline/stage_02_prepare_base_model.py
+    deps:
+      - src/VehicleTypeDetection/pipeline/stage_02_prepare_base_model.py
+      - config/config.yaml
+    params:
+      - input_shape
+      - num_classes
+      - kernel_size
+      - learning_rate
+    outs:
+      - artifacts/base_model
