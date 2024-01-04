@@ -6,8 +6,8 @@ stages:
     deps:
     - path: config/config.yaml
       hash: md5
-      md5: d16119ffa1465fa3ba9e2674bcc99b20
-      size: 307
+      md5: e1f5e059ecd31d8f2ac003904ad37470
+      size: 728
     - path: src/VehicleTypeDetection/pipeline/stage_01_data_ingestion.py
       hash: md5
       md5: 898ad0bd6c55a39b326d2b036bb10073
@@ -23,24 +23,64 @@ stages:
     deps:
     - path: config/config.yaml
       hash: md5
-      md5: d16119ffa1465fa3ba9e2674bcc99b20
-      size: 307
+      md5: e1f5e059ecd31d8f2ac003904ad37470
+      size: 728
     - path: src/VehicleTypeDetection/pipeline/stage_02_prepare_base_model.py
       hash: md5
-      md5: d0e10e6a250af8c698a5052d613b8971
-      size: 1122
+      md5: 086e0583b96a37d54d6483b6e6823a2d
+      size: 1177
     params:
       params.yaml:
+        include_top: false
+        input_shape:
+        - 224
+        - 224
+        - 3
+        learning_rate: 0.001
+        num_classes: 4
+        weights: imagenet
+    outs:
+    - path: artifacts/prepare_base_model
+      hash: md5
+      md5: e8c2aa88e5133c975fb508f6c866ef6b.dir
+      size: 118259952
+      nfiles: 2
+  model_training:
+    cmd: python src/VehicleTypeDetection/pipeline/stage_03_model_training.py
+    deps:
+    - path: artifacts/base_model
+      hash: md5
+      md5: fd10ed9d679c1843368b5860399c267e.dir
+      size: 568725
+      nfiles: 1
+    - path: artifacts/data_ingestion/Dataset
+      hash: md5
+      md5: 61e417c98f7e232dd23fcc157472dcc5.dir
+      size: 169723128
+      nfiles: 400
+    - path: config/config.yaml
+      hash: md5
+      md5: 048f5977df085e430a35f053e7fb1452
+      size: 634
+    - path: src/VehicleTypeDetection/components/prepare_callbacks.py
+      hash: md5
+      md5: e53535bb92858a6468498d9cf5ecf444
+      size: 1006
+    - path: src/VehicleTypeDetection/pipeline/stage_03_model_training.py
+      hash: md5
+      md5: 35f3511d2b79c0c95b0773c5ac3a8ddb
+      size: 1477
+    params:
+      params.yaml:
+        batch_size: 1
+        epochs: 10
         input_shape:
         - 240
         - 240
         - 3
-        kernel_size: 3
-        learning_rate: 0.001
-        num_classes: 4
+        is_augmentation: true
     outs:
-    - path: artifacts/base_model
+    - path: artifacts/training/trained_model.keras
       hash: md5
-      md5: 2c1641b782f10b75299b6728a3e67e9b.dir
-      size: 568731
-      nfiles: 1
+      md5: 836d0620ad01b773344205bdad5a19ab
+      size: 1654919

@@ -15,8 +15,25 @@ stages:
       - config/config.yaml
     params:
       - input_shape
+      - include_top
       - num_classes
-      - kernel_size
+      - weights
       - learning_rate
     outs:
-      - artifacts/base_model
+      - artifacts/prepare_base_model
+
+  model_training:
+    cmd: python src/VehicleTypeDetection/pipeline/stage_03_model_training.py
+    deps:
+      - src/VehicleTypeDetection/pipeline/stage_03_model_training.py
+      - src/VehicleTypeDetection/components/prepare_callbacks.py
+      - config/config.yaml
+      - artifacts/data_ingestion/Dataset
+      - artifacts/prepare_base_model
+    params:
+      - input_shape
+      - epochs
+      - batch_size
+      - is_augmentation
+    outs:
+      - artifacts/training/trained_model.keras

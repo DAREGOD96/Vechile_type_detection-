@@ -14,6 +14,7 @@ class PrepareBaseModelPipline:
         get_prepare_base_model_object=configuration_manager_object.get_prepare_base_model()
         prepare_base_model_object=PrepareBaseModel(config=get_prepare_base_model_object)
         prepare_base_model_object.get_base_model()
+        prepare_base_model_object.update_base_model()
 
 
 if __name__ == '__main__':

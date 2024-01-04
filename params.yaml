@@ -1,4 +1,8 @@
-input_shape: [240, 240,3]
+input_shape: [224, 224, 3]
 num_classes: 4  
-kernel_size: 3
+include_top: false
 learning_rate: 0.001 
+epochs: 20
+batch_size: 16
+weights: imagenet
+is_augmentation: True

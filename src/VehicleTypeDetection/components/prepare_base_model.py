@@ -6,38 +6,57 @@ class PrepareBaseModel:
     def __init__(self, config: PrepareBaseModelConfig) -> None:
         self.config = config
 
-    @staticmethod
-    def create_base_model(input_shape, num_classes, learning_rate, kernel_size):
-        model = tf.keras.Sequential([
-        tf.keras.layers.Rescaling(1./255, input_shape=input_shape),
-        tf.keras.layers.Conv2D(32, kernel_size, padding="same", activation='relu'),
-        tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.Conv2D(32, kernel_size, padding="same", activation='relu'),
-        tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.Conv2D(32, kernel_size, padding="same", activation='relu'),
-        tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(num_classes, activation="softmax")
-        ])
-
-        model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
-            loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-            metrics=['accuracy']
+    def get_base_model(self):
+        self.model = tf.keras.applications.vgg16.VGG16(
+            input_shape=self.config.input_shape,
+            weights=self.config.weights,
+            include_top=self.config.include_top
         )
 
-        return model
+        self.save_model(path=self.config.base_model_path, model=self.model)
+
+    @staticmethod
+    def _prepare_full_model(model, classes, freeze_all, freeze_till, learning_rate):
+        if freeze_all:
+            for layer in model.layers:
+                model.trainable = False
+        elif (freeze_till is not None) and (freeze_till > 0):
+            for layer in model.layers[:-freeze_till]:
+                model.trainable = False
+
+        flatten_in = tf.keras.layers.Flatten()(model.output)
+        prediction = tf.keras.layers.Dense(
+            units=classes,
+            activation="softmax"
+        )(flatten_in)
+
+        full_model = tf.keras.models.Model(
+            inputs=model.input,
+            outputs=prediction
+        )
+
+        full_model.compile(
+            optimizer=tf.keras.optimizers.SGD(learning_rate=learning_rate),
+            loss=tf.keras.losses.CategoricalCrossentropy(),
+            metrics=["accuracy"]
+        )
+
+        full_model.summary()
+        return full_model
     
-    def get_base_model(self):
-        self.model=self.create_base_model(
-            input_shape=self.config.input_shape,
-            num_classes=self.config.num_classes,
-            kernel_size=self.config.kernel_size,
+    def update_base_model(self):
+        self.full_model = self._prepare_full_model(
+            model=self.model,
+            classes=self.config.num_classes,
+            freeze_all=True,
+            freeze_till=None,
             learning_rate=self.config.learning_rate
         )
-        self.save_model(path=self.config.base_model_path,model=self.model)
+
+        self.save_model(path=self.config.updated_base_model_path, model=self.full_model)
 
     
     @staticmethod
     def save_model(path: Path, model: tf.keras.Model):
         model.save(path)
+

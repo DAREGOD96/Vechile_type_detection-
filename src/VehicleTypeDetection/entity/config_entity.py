@@ -11,8 +11,27 @@ class DataIngestionConfig:
 class PrepareBaseModelConfig:
     root_dir: Path
     base_model_path: Path
+    updated_base_model_path: Path
     input_shape: list
     num_classes: int
-    kernel_size: int
+    include_top: bool
+    weights: str
     learning_rate: float
 
+
+@dataclass
+class PrepareCallbackConfig:
+    root_dir:Path
+    tensorboard_root_log_dir:Path
+    checkpoint_model_filepath:Path
+
+@dataclass
+class ModelTrainingConfig:
+    root_dir: Path
+    trained_model_path:Path
+    updated_base_model_path: Path
+    training_data: Path
+    epochs: int
+    batch_size: int
+    is_augmentation: bool
+    input_shape: list
