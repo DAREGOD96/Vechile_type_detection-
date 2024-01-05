@@ -1,7 +1,8 @@
 import sys
 import os
 import yaml
-
+import json
+import base64
 from src.VehicleTypeDetection.logger import logging
 from src.VehicleTypeDetection.exception import CustomException
 from box import ConfigBox
@@ -46,3 +47,23 @@ def create_directories(path_to_directories: list, verbose=True):
         os.makedirs(path, exist_ok=True)
         if verbose:
             logging.info(f"created directory at: {path}")
+
+
+@ensure_annotations
+def save_json(path: Path, data: dict):
+    """save json data
+
+    Args:
+        path (Path): path to json file
+        data (dict): data to be saved in json file
+    """
+    with open(path, "w") as f:
+        json.dump(data, f, indent=4)
+
+    logging.info(f"json file saved at: {path}")
+
+def decodeImage(imgstring, fileName):
+    imgdata = base64.b64decode(imgstring)
+    with open(fileName, 'wb') as f:
+        f.write(imgdata)
+        f.close()

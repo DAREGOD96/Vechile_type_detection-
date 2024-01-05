@@ -35,3 +35,12 @@ class ModelTrainingConfig:
     batch_size: int
     is_augmentation: bool
     input_shape: list
+
+
+@dataclass
+class ModelEvaluationConfig:
+    model_path:Path
+    training_data:Path
+    all_params:dict
+    input_shape:list
+    batch_size:int

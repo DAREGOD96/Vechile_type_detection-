@@ -42,26 +42,26 @@ stages:
     outs:
     - path: artifacts/prepare_base_model
       hash: md5
-      md5: e8c2aa88e5133c975fb508f6c866ef6b.dir
+      md5: b71cdd3cda0f59f8bad794db51fda4f7.dir
       size: 118259952
       nfiles: 2
   model_training:
     cmd: python src/VehicleTypeDetection/pipeline/stage_03_model_training.py
     deps:
-    - path: artifacts/base_model
-      hash: md5
-      md5: fd10ed9d679c1843368b5860399c267e.dir
-      size: 568725
-      nfiles: 1
     - path: artifacts/data_ingestion/Dataset
       hash: md5
       md5: 61e417c98f7e232dd23fcc157472dcc5.dir
       size: 169723128
       nfiles: 400
+    - path: artifacts/prepare_base_model
+      hash: md5
+      md5: b71cdd3cda0f59f8bad794db51fda4f7.dir
+      size: 118259952
+      nfiles: 2
     - path: config/config.yaml
       hash: md5
-      md5: 048f5977df085e430a35f053e7fb1452
-      size: 634
+      md5: e1f5e059ecd31d8f2ac003904ad37470
+      size: 728
     - path: src/VehicleTypeDetection/components/prepare_callbacks.py
       hash: md5
       md5: e53535bb92858a6468498d9cf5ecf444
@@ -72,15 +72,47 @@ stages:
       size: 1477
     params:
       params.yaml:
-        batch_size: 1
-        epochs: 10
+        batch_size: 16
+        epochs: 20
         input_shape:
-        - 240
-        - 240
+        - 224
+        - 224
         - 3
         is_augmentation: true
     outs:
-    - path: artifacts/training/trained_model.keras
+    - path: artifacts/training/trained_model.h5
       hash: md5
-      md5: 836d0620ad01b773344205bdad5a19ab
-      size: 1654919
+      md5: 8555e2d521c24012cc2fdb33e2cae1ec
+      size: 59742128
+  model_evaluation:
+    cmd: python src/VehicleTypeDetection/pipeline/stage_04_model_evaluation.py
+    deps:
+    - path: artifacts/data_ingestion/Dataset
+      hash: md5
+      md5: 61e417c98f7e232dd23fcc157472dcc5.dir
+      size: 169723128
+      nfiles: 400
+    - path: artifacts/training/trained_model.h5
+      hash: md5
+      md5: 8555e2d521c24012cc2fdb33e2cae1ec
+      size: 59742128
+    - path: config/config.yaml
+      hash: md5
+      md5: e1f5e059ecd31d8f2ac003904ad37470
+      size: 728
+    - path: src/VehicleTypeDetection/pipeline/stage_04_model_evaluation.py
+      hash: md5
+      md5: b50d9ea4a394c8417c822ef6c5ba0f64
+      size: 1127
+    params:
+      params.yaml:
+        batch_size: 16
+        input_shape:
+        - 224
+        - 224
+        - 3
+    outs:
+    - path: scores.json
+      hash: md5
+      md5: 924fcb700c26f290d88a5dc350d43e2a
+      size: 60

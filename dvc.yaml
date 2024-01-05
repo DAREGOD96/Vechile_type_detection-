@@ -36,4 +36,18 @@ stages:
       - batch_size
       - is_augmentation
     outs:
-      - artifacts/training/trained_model.keras
+      - artifacts/training/trained_model.h5
+
+  model_evaluation:
+    cmd: python src/VehicleTypeDetection/pipeline/stage_04_model_evaluation.py
+    deps:
+      - src/VehicleTypeDetection/pipeline/stage_04_model_evaluation.py
+      - config/config.yaml
+      - artifacts/data_ingestion/Dataset
+      - artifacts/training/trained_model.h5
+    params:
+      - input_shape
+      - batch_size
+    metrics:
+    - scores.json:
+        cache: false

@@ -1,7 +1,7 @@
 import os
 from src.VehicleTypeDetection.utils.constant import *
 from src.VehicleTypeDetection.utils.common import read_yaml,create_directories
-from src.VehicleTypeDetection.entity.config_entity import DataIngestionConfig,PrepareBaseModelConfig,PrepareCallbackConfig,ModelTrainingConfig
+from src.VehicleTypeDetection.entity.config_entity import DataIngestionConfig,PrepareBaseModelConfig,PrepareCallbackConfig,ModelTrainingConfig,ModelEvaluationConfig
 
 class ConfigurationManager:
     def __init__(self,config_file_path=CONFIG_FILE_PATH,params_file_path=PARAMS_FILE_PATH):
@@ -73,6 +73,17 @@ class ConfigurationManager:
         )
 
         return model_training_config
+    
+    def get_model_evaluation_config(self) -> ModelEvaluationConfig:
+        model_evaluation_config=ModelEvaluationConfig(
+            model_path=Path("artifacts/training/trained_model.h5"),
+            training_data=Path("artifacts/data_ingestion/Dataset"),
+            all_params=self.params_file,
+            input_shape=self.params_file.input_shape,
+            batch_size=self.params_file.batch_size
+        )
+
+        return model_evaluation_config
 
 
 
